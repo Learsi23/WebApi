@@ -1,6 +1,4 @@
 ﻿using DashboardEmployee.Data;
-using DashboardEmployee.Services;
-using DashboardEmployee.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DashboardEmployee.Extensions
@@ -16,9 +14,6 @@ namespace DashboardEmployee.Extensions
                 opt.UseSqlServer(connectionString);
             });
 
-            services.AddScoped<IDepartmentService, DepartmentService>();
-            services.AddScoped<IEmployeeService, EmployeeService>();
-            services.AddScoped<IImageService, ImageService>();
 
             return services;
         }

@@ -3,18 +3,16 @@ using DashboardEmployee.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDatabaseConfiguration(builder.Configuration);
+builder.Services.AddApplicationServices();
 
 builder.Services.AddCorsConfiguration(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        // Ignora diferencias de mayúsculas/minúsculas entre JSON y DTOs
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
 
-
-builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
@@ -33,9 +31,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors(CorsExtension.AllowSpecificOrigins);
+
 app.UseAuthorization();
 
-app.UseCors(CorsExtension.AllowSpecificOrigins);
 app.MapControllers();
 
 app.Run();

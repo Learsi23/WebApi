@@ -1,28 +1,22 @@
-﻿namespace DashboardEmployee.Extensions
+﻿namespace DashboardEmployee.Extensions;
+
+public static class CorsExtension
 {
-    public static class CorsExtension
+    public const string AllowSpecificOrigins = "_allowSpecificOrigins";
+    public static IServiceCollection AddCorsConfiguration(this IServiceCollection services,
+    IConfiguration configuration)
     {
-
-        public static readonly string AllowSpecificOrigins = "_allowSpecificOrigins";
-
-        public static IServiceCollection AddCorsConfiguration(this IServiceCollection services, IConfiguration configuration)
+        var allowedOrigins = configuration.GetSection("AllowedOrigins").Get<string[]>()
+        ?? throw new InvalidOperationException("'AllowedOrigins' is missing in configuration.");
+        services.AddCors(options =>
         {
-            var allowedOrigins = configuration.GetSection("AllowOrigins").Get<string[]>()
-                 ?? ["http://localhost:3000", "https://localhost:3000"];
-
-            services.AddCors(opt =>
+            options.AddPolicy(AllowSpecificOrigins, policy =>
             {
-                opt.AddPolicy(name: AllowSpecificOrigins, policy =>
-                {
-                    policy.WithOrigins(allowedOrigins)
-                          .AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowCredentials(); // Optional: required if using cookies/sessions
-                });
+                policy.WithOrigins(allowedOrigins)
+        .AllowAnyHeader()
+        .AllowAnyMethod();
             });
-
-            return services;
-        }
-
+        });
+        return services;
     }
 }
