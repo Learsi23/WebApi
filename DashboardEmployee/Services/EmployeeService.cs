@@ -19,7 +19,7 @@ namespace DashboardEmployee.Services
                         e.FullName,
                         e.Email,
                         e.Salary,
-                        e.Image!,
+                        e.ImageUrl!,
                         e.Department.Name,
                         e.DepartmentId
                     ))
@@ -36,7 +36,7 @@ namespace DashboardEmployee.Services
                         e.FullName,
                         e.Email,
                         e.Salary,
-                        e.Image!,
+                        e.ImageUrl!,
                         e.Department.Name,
                         e.DepartmentId
                     ))
@@ -56,7 +56,7 @@ namespace DashboardEmployee.Services
                 FullName = request.FullName,
                 Email = request.Email,
                 Salary = request.Salary,
-                Image = imageUrl,
+                ImageUrl = imageUrl,
                 DepartmentId = request.DepartmentId
             };
 
@@ -70,7 +70,7 @@ namespace DashboardEmployee.Services
                 employee.FullName,
                 employee.Email,
                 employee.Salary,
-                employee.Image!,
+                employee.ImageUrl!,
                 employee.Department.Name,
                 employee.DepartmentId
             );
@@ -82,7 +82,7 @@ namespace DashboardEmployee.Services
             var employee = await db.Employees.FindAsync([id], ct);
             if (employee is null) return false;
 
-            serviceImage.DeleteImageFile(employee.Image);
+            serviceImage.DeleteImageFile(employee.ImageUrl);
 
             db.Employees.Remove(employee);          
             await db.SaveChangesAsync(ct);
@@ -106,13 +106,13 @@ namespace DashboardEmployee.Services
             employee.DepartmentId = request.DepartmentId;
 
             // If a new image is supplied and differs from current image, delete old file and save new one
-            if (!string.IsNullOrWhiteSpace(request.Image) && request.Image != employee.Image)
+            if (!string.IsNullOrWhiteSpace(request.Image) && request.Image != employee.ImageUrl)
             {
                 // Delete previous physical file if it exists
-                serviceImage.DeleteImageFile(employee.Image);
+                serviceImage.DeleteImageFile(employee.ImageUrl);
 
                 // Save new image and update entity property
-                employee.Image = await serviceImage.SaveImageAsync(request.Image, ct);
+                employee.ImageUrl = await serviceImage.SaveImageAsync(request.Image, ct);
             }
 
             await db.SaveChangesAsync(ct);
@@ -122,7 +122,7 @@ namespace DashboardEmployee.Services
                 employee.FullName,
                 employee.Email,
                 employee.Salary,
-                employee.Image!,
+                employee.ImageUrl!,
                 employee.Department.Name,
                 employee.DepartmentId
             );
