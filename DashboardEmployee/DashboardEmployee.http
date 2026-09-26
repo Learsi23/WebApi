@@ -1,0 +1,45 @@
+@DashboardEmployee_HostAddress = https://localhost:7197
+
+
+GET {{DashboardEmployee_HostAddress}}/api/department/GetAll
+
+###
+
+POST {{DashboardEmployee_HostAddress}}/api/employee/CreateEmployee
+Content-Type: application/json
+
+{
+  "FullName": "Carlos Mendoza",
+  "Email": "carlos.mendoza@empresa.com",
+  "salary": 55000,
+  "Image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+  "departmentId": 1
+}
+
+###
+
+GET {{DashboardEmployee_HostAddress}}/api/employee/GetALL
+
+###
+
+@id=0
+DELETE {{DashboardEmployee_HostAddress}}/api/employee/DeleteEmployee?id={{id}}
+
+###
+
+PUT {{DashboardEmployee_HostAddress}}/api/employee/UpdateEmployee/1
+Content-Type: application/json
+
+{
+   "FullName": "Carlos Mendoza",
+  "Email": "carlos.mendoza@empresa.com",
+  "salary": 55000,
+  "Image": "/images/avatar4.jpg",
+  "departmentId": 1
+}
+
+###
+
+GET {{DashboardEmployee_HostAddress}}/api/employee/GetById/1
+
+###

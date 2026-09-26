@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DashboardEmployee/DashboardEmployee.csproj" />
+  <Project Path="React.Web/react.web.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
