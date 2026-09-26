@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace DashboardEmployee.Entities;
 
-public partial class Department
+public class Department
 {
     public int DepartmentId { get; set; }
 
     public string Name { get; set; } = null!;
 
-    public DateTime CreatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; set; }
 
-    public virtual ICollection<Employee> Employees { get; set; } = new List<Employee>();
+    public virtual ICollection<Employee> Employees { get; set; } = [];
 }

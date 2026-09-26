@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 
 namespace DashboardEmployee.Entities;
 
-public partial class Employee
+public class Employee
 {
     public int EmployeeId { get; set; }
 
@@ -13,7 +12,7 @@ public partial class Employee
 
     public decimal Salary { get; set; }
 
-    public string? Image { get; set; }
+    public string? ImageUrl { get; set; }
 
     public int DepartmentId { get; set; }
 
