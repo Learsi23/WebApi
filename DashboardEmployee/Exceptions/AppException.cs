@@ -1,4 +1,4 @@
-﻿namespace DashboardEmployee.Extensions
+﻿namespace DashboardEmployee.Exceptions
 {
     /// <summary>
     /// Base class for expected errors. Each subclass knows which HTTP status it maps to,

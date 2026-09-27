@@ -1,4 +1,4 @@
-﻿namespace DashboardEmployee.Extensions
+﻿namespace DashboardEmployee.Exceptions
 {
     public sealed class NotFoundException(string message) : AppException(message)
     {

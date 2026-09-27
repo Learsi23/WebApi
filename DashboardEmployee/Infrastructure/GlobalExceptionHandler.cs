@@ -1,5 +1,5 @@
 ﻿using DashboardEmployee.Entities;
-using DashboardEmployee.Extensions;
+using DashboardEmployee.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;

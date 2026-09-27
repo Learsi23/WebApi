@@ -1,4 +1,4 @@
-﻿namespace DashboardEmployee.Extensions
+﻿namespace DashboardEmployee.Exceptions
 {
     public sealed class ConflictException(string message) : AppException(message)
     {
