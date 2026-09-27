@@ -7,7 +7,8 @@ namespace DashboardEmployee.Extensions
     {
         public static IServiceCollection AddDatabaseConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
-            var connectionString = configuration.GetConnectionString("SqlServerConnection");
+            var connectionString = configuration.GetConnectionString("SqlServerConnection")
+                ?? throw new InvalidOperationException("Connection string 'SqlserverConnection' is missing.");
 
             services.AddDbContext<AppDbContext>(opt =>
             {

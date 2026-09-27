@@ -33,6 +33,10 @@ namespace DashboardEmployee.Data.Configurations
             .WithMany(d => d.Employees)
             .HasForeignKey(e => e.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
+
+
+
+            builder.HasData(SeedData.Employees);
         }
     }
 }

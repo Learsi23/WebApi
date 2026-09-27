@@ -23,7 +23,9 @@ namespace DashboardEmployee.Data.Configurations
             builder.Property(d => d.CreatedAt)
                 .HasDefaultValueSql("SYSUTCDATETIME()");
 
-            
+            //FAKE DATA
+
+            builder.HasData(SeedData.Departments);
         }
     }
 }

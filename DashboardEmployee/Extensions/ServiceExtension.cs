@@ -1,5 +1,6 @@
 ﻿using DashboardEmployee.Services;
 using DashboardEmployee.Services.Interfaces;
+using FluentValidation;
 
 namespace DashboardEmployee.Extensions
 {
@@ -10,7 +11,8 @@ namespace DashboardEmployee.Extensions
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IImageService, ImageService>();
-
+            // Registers every AbstractValidator<T> in this project as IValidator<T>.
+            services.AddValidatorsFromAssemblyContaining<Program>();
 
             return services;
         }
