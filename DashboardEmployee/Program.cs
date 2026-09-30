@@ -31,16 +31,20 @@ var app = builder.Build();
 app.UseExceptionHandler(); // catches exceptions from everything below 
 app.UseStatusCodePages(); // empty 404/405 responses become ProblemDetails too
 
-app.UseStaticFiles();
-
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+
 app.UseCors(CorsExtension.AllowSpecificOrigins);
 app.UseAuthorization();
 app.MapControllers();

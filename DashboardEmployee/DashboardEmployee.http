@@ -40,6 +40,97 @@ Content-Type: application/json
 
 ###
 
-GET {{DashboardEmployee_HostAddress}}/api/employee/GetById/1
+@baseUrl = http://localhost:5201
 
-###
+### Health check
+GET {{baseUrl}}/health
+
+### ---------- Departments ---------
+
+### List departments
+GET {{baseUrl}}/api/departments
+
+### Get one department
+GET {{baseUrl}}/api/departments/1
+
+### Create department
+POST {{baseUrl}}/api/departments
+Content-Type: application/json
+
+{
+  "name": "Marketing"
+}
+
+### Rename department
+PUT {{baseUrl}}/api/departments/4
+Content-Type: application/json
+
+{
+  "name": "Marketing & Sales"
+}
+
+### Delete department (409 if it still has employees)
+DELETE {{baseUrl}}/api/departments/4
+
+### ---------- Employees ---------
+
+### List: search + filter + sort + paging (all optional)
+GET {{baseUrl}}/api/employees?search=a&departmentId=1&sortBy=salary&sortDirection=desc&page=1&pageSize=5
+
+### Get one employee
+GET {{baseUrl}}/api/employees/1
+
+### Create employee
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "fullName": "Ingrid Nilsson",
+  "email": "ingrid.nilsson@company.se",
+  "salary": 52000,
+  "departmentId": 2
+}
+
+### Create with invalid data (expect 400 with one error per field)
+POST {{baseUrl}}/api/employees
+Content-Type: application/json
+
+{
+  "fullName": "",
+  "email": "not-an-email",
+  "salary": -100,
+  "departmentId": 999
+}
+
+### Update employee (change department)
+PUT {{baseUrl}}/api/employees/7
+Content-Type: application/json
+
+{
+  "fullName": "Ingrid Nilsson",
+  "email": "ingrid.nilsson@company.se",
+  "salary": 54000,
+  "departmentId": 3
+}
+
+### Upload / replace photo (multipart/form-data)
+PUT {{baseUrl}}/api/employees/7/image
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="image"; filename="photo.jpg"
+Content-Type: image/jpeg
+
+< ./wwwroot/images/avatar3.jpg
+--WebAppBoundary--
+
+### Remove photo
+DELETE {{baseUrl}}/api/employees/7/image
+
+### Delete employee
+DELETE {{baseUrl}}/api/employees/7
+
+### ---------- Dashboard ---------
+
+### Statistics for the dashboard
+GET {{baseUrl}}/api/dashboard/stats
