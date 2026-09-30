@@ -11,6 +11,8 @@ namespace DashboardEmployee.Extensions
             services.AddScoped<IDepartmentService, DepartmentService>();
             services.AddScoped<IEmployeeService, EmployeeService>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IDashboardService, DashboardService>();
+
             // Registers every AbstractValidator<T> in this project as IValidator<T>.
             services.AddValidatorsFromAssemblyContaining<Program>();
 
