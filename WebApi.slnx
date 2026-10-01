@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="DashboardEmployee.Tests/DashboardEmployee.Tests.csproj" />
   <Project Path="DashboardEmployee/DashboardEmployee.csproj" />
   <Project Path="React.Web/react.web.esproj">
     <Build />
