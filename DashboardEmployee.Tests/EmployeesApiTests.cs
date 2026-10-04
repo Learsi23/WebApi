@@ -10,10 +10,12 @@ namespace DashboardEmployee.Tests
     [Collection(ApiCollection.Name)]
     public sealed class EmployeesApiTests(ApiFactory factory)
     {
-        private readonly HttpClient _client = factory.CreateClient();
+        // Using the authenticated Admin client to bypass [Authorize(Roles = Roles.Admin)] restrictions
+        private readonly HttpClient _client = factory.AdminClient;
 
         // Every test uses its own email, so tests never collide on the unique index.
-        private static EmployeeRequest NewEmployee(int departmentId = 1) => new("Test Person", $"test-{Guid.NewGuid():N}@company.se", 40000, departmentId);
+        private static EmployeeRequest NewEmployee(int departmentId = 1) =>
+            new("Test Person", $"test-{Guid.NewGuid():N}@company.se", 40000, departmentId);
 
         private async Task<EmployeeResponse> CreateEmployeeAsync(EmployeeRequest? request = null)
         {
@@ -34,19 +36,15 @@ namespace DashboardEmployee.Tests
         [Fact]
         public async Task GetAll_WithInvalidQuery_Returns400()
         {
-            var request = NewEmployee();
-
-            var response = await _client.PostAsJsonAsync("/api/employees", request);
-
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            var created = await response.Content.ReadFromJsonAsync<EmployeeResponse>();
-            Assert.Equal(request.Email, created!.Email);
-            Assert.Equal($"/api/employees/{created.Id}", response.Headers.Location!.AbsolutePath);
+            // GET request with invalid pagination parameters
+            var response = await _client.GetAsync("/api/employees?page=-1&pageSize=0");
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
+
         [Fact]
         public async Task Create_WithInvalidData_Returns400WithFieldErrors()
         {
-            var response = await _client.PostAsJsonAsync("/api/employees", new EmployeeRequest("","not-an-email", -100, 999));
+            var response = await _client.PostAsJsonAsync("/api/employees", new EmployeeRequest("", "not-an-email", -100, 999));
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             var problem = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
@@ -62,7 +60,7 @@ namespace DashboardEmployee.Tests
             var existing = await CreateEmployeeAsync();
             var response = await _client.PostAsJsonAsync("/api/employees", NewEmployee() with
             {
-                Email =  existing.Email
+                Email = existing.Email
             });
             Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
         }
@@ -72,10 +70,11 @@ namespace DashboardEmployee.Tests
         {
             // Regression test for the old NullReferenceException when the department changed.
             var employee = await CreateEmployeeAsync(NewEmployee(departmentId: 1));
-            var request = new EmployeeRequest(employee.FullName, employee.Email, employee.Salary,
-            DepartmentId: 2);
+            var request = new EmployeeRequest(employee.FullName, employee.Email, employee.Salary, DepartmentId: 2);
+
             var response = await _client.PutAsJsonAsync($"/api/employees/{employee.Id}", request);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
             var updated = await response.Content.ReadFromJsonAsync<EmployeeResponse>();
             Assert.Equal(2, updated!.DepartmentId);
             Assert.Equal("Human Resources", updated.DepartmentName);
@@ -88,43 +87,47 @@ namespace DashboardEmployee.Tests
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
             Assert.Equal("application/problem+json", response.Content.Headers.ContentType!.MediaType);
         }
+
         [Fact]
         public async Task Delete_RemovesEmployee()
         {
             var employee = await CreateEmployeeAsync();
             var deleteResponse = await _client.DeleteAsync($"/api/employees/{employee.Id}");
             var getResponse = await _client.GetAsync($"/api/employees/{employee.Id}");
+
             Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
+
         [Fact]
         public async Task UploadImage_WithRealPng_SavesFile()
         {
             var employee = await CreateEmployeeAsync();
             byte[] png = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0, 0, 0, 0];
-            var response = await _client.PutAsync($"/api/employees/{employee.Id}/image",
-            ImageContent(png, "photo.png"));
+
+            var response = await _client.PutAsync($"/api/employees/{employee.Id}/image", ImageContent(png, "photo.png"));
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
             var updated = await response.Content.ReadFromJsonAsync<EmployeeResponse>();
             Assert.StartsWith("/uploads/employees/", updated!.ImageUrl);
-            Assert.True(File.Exists(Path.Combine(factory.WebRootPath,
-            updated.ImageUrl!.TrimStart('/'))));
+            Assert.True(File.Exists(Path.Combine(factory.WebRootPath, updated.ImageUrl!.TrimStart('/'))));
         }
+
         [Fact]
         public async Task UploadImage_WithFakeImage_Returns400()
         {
             var employee = await CreateEmployeeAsync();
             var notAnImage = "<?php echo 'hacked'; ?>"u8.ToArray();
-            var response = await _client.PutAsync($"/api/employees/{employee.Id}/image",
-            ImageContent(notAnImage, "evil.png"));
+
+            var response = await _client.PutAsync($"/api/employees/{employee.Id}/image", ImageContent(notAnImage, "evil.png"));
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
+
         private static MultipartFormDataContent ImageContent(byte[] bytes, string fileName)
         {
             var file = new ByteArrayContent(bytes);
-            file.Headers.ContentType = new MediaTypeHeaderValue("image/png"); // the client can lie; the API checks the bytes
-
-            return new MultipartFormDataContent { { file, "image", fileName } }; 
+            file.Headers.ContentType = new MediaTypeHeaderValue("image/png"); // The client can lie; the API checks the bytes
+            return new MultipartFormDataContent { { file, "image", fileName } };
         }
-        }
+    }
 }

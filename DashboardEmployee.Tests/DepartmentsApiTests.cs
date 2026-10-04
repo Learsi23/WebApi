@@ -8,7 +8,7 @@ namespace DashboardEmployee.Tests;
 [Collection(ApiCollection.Name)]
 public sealed class DepartmentsApiTests(ApiFactory factory)
 {
-    private readonly HttpClient _client = factory.CreateClient();
+    private readonly HttpClient _client = factory.AdminClient;
     [Fact]
     public async Task Create_ThenDelete_EmptyDepartment()
     {

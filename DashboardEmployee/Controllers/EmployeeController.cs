@@ -1,7 +1,9 @@
 ﻿using DashboardEmployee.Dtos;
+using DashboardEmployee.Infrastructure;
 using DashboardEmployee.Services;
 using DashboardEmployee.Services.Interfaces;
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -34,6 +36,7 @@ namespace DashboardEmployee.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<EmployeeResponse>> CreateEmployee(EmployeeRequest request, CancellationToken ct)
         {
             var validation = await requestValidator.ValidateAsync(request, ct);
@@ -46,6 +49,7 @@ namespace DashboardEmployee.Controllers
         }
 
         [HttpPut("{id:int}")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType<EmployeeResponse>(StatusCodes.Status200OK)]
         [ProducesResponseType<ValidationProblemDetails>(StatusCodes.Status400BadRequest)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
@@ -60,6 +64,7 @@ namespace DashboardEmployee.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> DeleteEmployee(int id, CancellationToken ct)
@@ -69,6 +74,7 @@ namespace DashboardEmployee.Controllers
         }
 
         [HttpPut("{id:int}/image")]
+        [Authorize(Roles = Roles.Admin)]
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(ImageService.MaxFileSizeBytes + 64 * 1024)] // file + multipart overhead
         [ProducesResponseType<EmployeeResponse>(StatusCodes.Status200OK)]
@@ -79,6 +85,7 @@ namespace DashboardEmployee.Controllers
             return Ok(await employeeService.UpdateImageAsync(id, image, ct));
         }
         [HttpDelete("{id:int}/image")]
+        [Authorize(Roles = Roles.Admin)]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType<ProblemDetails>(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> RemoveImage(int id, CancellationToken ct)
